@@ -1,0 +1,46 @@
+# Entornos y llaves
+.venv/
+.env
+**/.env
+
+# Modelos y cachés descargados
+.cache/
+models/
+*.safetensors
+*.gguf
+
+# Corpus procesado e índice: no se versionan (§9.3 del enunciado). Se publican en la nube
+# y se enlazan desde la sección "Corpus e índice" del README.
+data/raw/
+data/processed/
+data/releases/
+index/
+*.sqlite
+*.faiss
+
+# Resultados de ejecución y de experimentos
+salidas/
+reports/
+*.run.json
+*.trace.jsonl
+
+# Material apartado en el refactor del 2026-10-02 (ver _archivo/LEEME.md)
+_archivo/
+
+# Artefactos de Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+*.tmp
+
+# Sí se versionan, por ser entregables (§9.2): README.md, LICENSE, requirements.txt,
+# submissions.jsonl, CORPUS.md, corpus_manifest.json, informe/, interfaz/, src/.
+
+# Copias comprimidas del corpus y del índice (3 y 6,5 GB): se publican aparte, no en git
+*.zip
+*.tar.gz
+
+# Archivos apartados por src/main.py y corridas de prueba
+*.anterior.jsonl
+*.antes_de_reanudar.jsonl

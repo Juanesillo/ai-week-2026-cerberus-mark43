@@ -1,0 +1,109 @@
+{
+  "equipo": "Equipo Ejemplo",
+  "licencia": "CC-BY-4.0",
+  "fecha_generacion": "2026-09-18",
+  "enlace_nube": "https://drive.google.com/file/d/EJEMPLO-NO-FUNCIONAL/view?usp=sharing",
+  "encoder": "intfloat/multilingual-e5-large",
+  "dimension": 1024,
+  "indice": "faiss.IndexFlatIP",
+  "n_documentos": 8,
+  "n_fragmentos": 1742,
+  "documentos": [
+    {
+      "doc_id": "constitucion_politica_1991",
+      "titulo": "Constitucion Politica de Colombia de 1991",
+      "fuente": "Secretaria del Senado",
+      "url": "http://www.secretariasenado.gov.co/senado/basedoc/constitucion_politica_1991.html",
+      "fecha_consulta": "2026-09-14",
+      "areas": ["Derecho constitucional", "Derecho administrativo"],
+      "n_articulos": 380,
+      "n_fragmentos": 380,
+      "metodo_ingesta": "parser HTML + segmentacion por articulo",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "doc_id": "ley_472_1998",
+      "titulo": "Ley 472 de 1998, acciones populares y de grupo",
+      "fuente": "Secretaria del Senado",
+      "url": "http://www.secretariasenado.gov.co/senado/basedoc/ley_0472_1998.html",
+      "fecha_consulta": "2026-09-14",
+      "areas": ["Derecho constitucional", "Derecho procesal"],
+      "n_articulos": 88,
+      "n_fragmentos": 88,
+      "metodo_ingesta": "parser HTML + segmentacion por articulo",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "doc_id": "ley_1010_2006",
+      "titulo": "Ley 1010 de 2006, acoso laboral",
+      "fuente": "Secretaria del Senado",
+      "url": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1010_2006.html",
+      "fecha_consulta": "2026-09-15",
+      "areas": ["Derecho laboral"],
+      "n_articulos": 20,
+      "n_fragmentos": 20,
+      "metodo_ingesta": "parser HTML + segmentacion por articulo",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+    },
+    {
+      "doc_id": "ley_1562_2012",
+      "titulo": "Ley 1562 de 2012, Sistema General de Riesgos Laborales",
+      "fuente": "Secretaria del Senado",
+      "url": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1562_2012.html",
+      "fecha_consulta": "2026-09-15",
+      "areas": ["Derecho laboral"],
+      "n_articulos": 32,
+      "n_fragmentos": 32,
+      "metodo_ingesta": "parser HTML + segmentacion por articulo",
+      "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    {
+      "doc_id": "codigo_sustantivo_trabajo",
+      "titulo": "Codigo Sustantivo del Trabajo (Decreto 2663 de 1950)",
+      "fuente": "Secretaria del Senado",
+      "url": "http://www.secretariasenado.gov.co/senado/basedoc/codigo_sustantivo_trabajo.html",
+      "fecha_consulta": "2026-09-15",
+      "areas": ["Derecho laboral"],
+      "n_articulos": 493,
+      "n_fragmentos": 493,
+      "metodo_ingesta": "parser HTML + segmentacion por articulo",
+      "sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+    },
+    {
+      "doc_id": "ley_1676_2013",
+      "titulo": "Ley 1676 de 2013, garantias mobiliarias",
+      "fuente": "Secretaria del Senado",
+      "url": "http://www.secretariasenado.gov.co/senado/basedoc/ley_1676_2013.html",
+      "fecha_consulta": "2026-09-16",
+      "areas": ["Derecho comercial y sociedades"],
+      "n_articulos": 91,
+      "n_fragmentos": 91,
+      "metodo_ingesta": "parser HTML + segmentacion por articulo",
+      "sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+    },
+    {
+      "doc_id": "sentencia_c_145_2018",
+      "titulo": "Sentencia C-145 de 2018",
+      "fuente": "Relatoria de la Corte Constitucional",
+      "url": "https://www.corteconstitucional.gov.co/relatoria/2018/C-145-18.htm",
+      "fecha_consulta": "2026-09-16",
+      "areas": ["Derecho comercial y sociedades", "Derecho constitucional"],
+      "n_articulos": null,
+      "n_fragmentos": 214,
+      "metodo_ingesta": "parser HTML + segmentacion por parrafo con solapamiento",
+      "sha256": "6666666666666666666666666666666666666666666666666666666666666666"
+    },
+    {
+      "doc_id": "sentencia_sl3385_2022",
+      "titulo": "Sentencia SL3385-2022, Sala de Casacion Laboral",
+      "fuente": "Relatoria de la Corte Suprema de Justicia",
+      "url": "https://www.cortesuprema.gov.co/relatoria/EJEMPLO-SL3385-2022",
+      "fecha_consulta": "2026-09-16",
+      "areas": ["Derecho laboral"],
+      "n_articulos": null,
+      "n_fragmentos": 424,
+      "metodo_ingesta": "extraccion de PDF con OCR + segmentacion por parrafo",
+      "sha256": "7777777777777777777777777777777777777777777777777777777777777777"
+    }
+  ]
+}
