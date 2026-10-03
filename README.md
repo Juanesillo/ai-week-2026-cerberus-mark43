@@ -1,26 +1,68 @@
-# P34K — Hackathon 2026
+# Cerberus — Equipo P34K, Hackathon 2026
 
-**Integrantes:** <!-- PENDIENTE: los tres nombres, como se registraron en la sesión inaugural -->
-**Universidad de los Andes**
+**Integrantes:**
+
+Samuel Charry Tobar
+
+Juan Esteban Triviño nieves 
+
+Shaiel Mateo Jimenez Posada 
+
+
+**Universidad de los Andes** · Departamento de Ingeniería de Sistemas y Computación · AI Week 2026
 
 Sistema de respuesta a preguntas de derecho colombiano con un modelo abierto de tamaño
 reducido y un corpus jurídico propio. Recuperación híbrida sobre un índice FAISS del
-corpus, reordenamiento con un *reranker* abierto, generación determinista con Qwen3-8B y
-verificación de que toda norma citada proceda de un pasaje efectivamente recuperado.
+corpus, reordenamiento con un *reranker* abierto, recuperación iterativa, generación
+determinista con Qwen3-8B y verificación de que toda norma citada proceda de un pasaje
+efectivamente recuperado.
+
+## Reproducción en un solo comando
+
+Desde un árbol recién clonado, con Python 3.10 disponible:
+
+```bash
+./reproducir.sh
+```
+
+Crea el entorno, instala las dependencias, comprueba que estén el corpus y el índice,
+responde las 50 preguntas de muestra y pasa el evaluador oficial. Si su intérprete 3.10 se
+llama de otro modo: `PYTHON=/ruta/a/python3.10 ./reproducir.sh`.
+
+El script **no descarga el corpus**: pesa ~15 GB y se publica aparte (§9.3). Descárguelo
+del enlace de la sección siguiente y descomprímalo en la raíz, de modo que queden `index/`
+y `data/processed/`.
+
+Para generar la entrega sobre el banco completo, una vez colocado `test_992.jsonl` en
+`data/oficial/data/`:
+
+```bash
+python src/main.py --split test        # 992 preguntas -> submissions.jsonl
+```
 
 ## Corpus e índice
 
-<!-- OBLIGATORIO. El jurado descarga desde aquí. Verificar el enlace desde una sesión
-     privada del navegador antes de las 15:00. -->
+
 
 | Recurso | Enlace | Tamaño | Licencia |
 |---|---|---|---|
-| Corpus procesado e índice vectorial | `<PENDIENTE: URL del comprimido>` | ~15 GB | CC-BY-4.0 |
+| Corpus procesado e índice vectorial | https://drive.google.com/drive/folders/1Wb9210bh26VtHSink3AOwv5I4wn-rs9F?usp=sharing | ~15 GB | CC-BY-4.0 |
 
-El comprimido contiene `LICENSE`, `corpus_manifest.json`, `corpus/` con los documentos
-procesados e `indice/` con el índice serializado y los fragmentos.
 
-El enlace permanece activo hasta el `<PENDIENTE: fecha, treinta días después del evento>`.
+Requisitos del enlace (§9.3): descarga sin solicitud de permiso, lectura para cualquiera
+que tenga el vínculo, y activo durante treinta días.
+
+## Video
+
+| Entregable | Enlace |
+|---|---|
+| Video de máximo 5 minutos | https://youtu.be/vCRKbU21F-I?si=ddW7PB6i-I5zPsb3 |
+
+## Entrega
+
+`submissions.jsonl` con las 992 respuestas se sube a la raíz de este repositorio. El
+esquema es `data/oficial/schema/submission.schema.json`; lo produce
+`python src/main.py --split test`.
 
 ## Arquitectura
 
@@ -36,27 +78,32 @@ El enlace permanece activo hasta el `<PENDIENTE: fecha, treinta días después d
 
 Generación determinista: `do_sample=False`, `num_beams=1`, temperatura 0 y semilla fija.
 
-## Reproducción
+## Detalle de ejecución
+
+`./reproducir.sh` equivale a estos pasos, por si prefiere darlos a mano:
 
 ```bash
-pip install -r requirements.txt
-python src/main.py --split sample
+python3.10 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt          # incluye `-e .`, que exige Python 3.10
+python src/main.py --split sample        # escribe salidas/mark50.jsonl + evaluador oficial
 ```
 
-Ese comando comprueba los datos, responde las 50 preguntas de muestra, escribe
-`salidas/mark46.jsonl` y pasa el evaluador oficial. Para generar la entrega sobre el banco
-completo:
-
-```bash
-python src/main.py --split test        # 992 preguntas -> submissions.jsonl
-```
+El mark por defecto es el 50 (`MARK_ACTUAL` en `src/legalrag/config.py`); `--mark N` corre
+cualquier otro. La interfaz usa esa misma configuración, para que lo que el jurado
+regenere en vivo coincida con lo entregado (§7).
 
 Para evaluar con el juez de texto libre, tal como lo indica el enunciado:
 
 ```bash
+python3.10 -m venv .venv-evaluador && source .venv-evaluador/bin/activate
 pip install -r data/oficial/scripts/requirements-evaluador.txt
 python data/oficial/scripts/evaluate.py --submission entrega.jsonl --split sample --ragas
 ```
+
+**En un entorno aparte, a propósito.** El evaluador trae `ragas`, `datasets`,
+`langchain-openai` y `langchain-community<0.4`, con rangos de `numpy`, `pandas` y
+`sentence-transformers` que chocan con los pines de `requirements.txt`. Instalar ambos
+sobre el mismo entorno rompe uno de los dos.
 
 Para autoevaluarnos usamos `python scripts/ragas_oficial.py salidas/<corrida>.jsonl` (o
 `python src/main.py --ragas`). Ejecuta ese mismo evaluador **sin modificarlo**, pero con una sola
@@ -85,8 +132,19 @@ python -m legalrag.cli index       # FAISS FlatIP + metadatos en index/
 
 ## Resultados sobre las preguntas de muestra
 
-Mark 46 (índice reindexado el 1-oct), evaluador oficial sobre `data/oficial/data/sample_50.jsonl`,
-sin errores de validación, medido el 2-oct. Reporte completo en `salidas/mark46_oficial.json`.
+Evaluador oficial sobre `data/oficial/data/sample_50.jsonl`, sin errores de validación.
+Solo los 50 puntos deterministas: los 30 de texto libre dependen del juez de OpenRouter.
+
+| Mark | Qué añade | Total determinista /50 |
+|---|---|---:|
+| 46 | normalizador de citas directo | 44,36 |
+| 47 | orden jurídico e IRAC en texto libre | 44,36 |
+| 48 | criterio cronológico (lex posterior) | 44,36 |
+| 49 | precedente reciente primero | 44,77 |
+| **50** (por defecto) | semiabiertas concisas | **44,77** |
+
+Desglose por componente de la última corrida con detalle completo del evaluador oficial
+(Mark 46, medido el 2-oct, reporte en `salidas/mark46_oficial.json`):
 
 | Componente | Puntos | Posibles |
 |---|---:|---:|
@@ -97,8 +155,8 @@ sin errores de validación, medido el 2-oct. Reporte completo en `salidas/mark46
 
 Detalle: 13 de 15 cerradas (exactitud 0,867 frente a la referencia de 0,905); *recall*
 ponderado de citas 0,898, con **0 citas sin respaldo** en la evidencia recuperada;
-calibración de abstención 0,907. La corrección en texto libre (30 puntos adicionales) se
-mide con el juez de OpenRouter y está pendiente de una corrida válida.
+calibración de abstención 0,907. Mark 49 y 50 suben el total a 44,77 sin empeorar ninguna
+pregunta; las cifras por mark están anotadas en `src/legalrag/config.py`.
 
 La muestra son 50 ítems: cada mejora de esta tabla equivale a una o dos preguntas, así que
 el resultado sobre las 992 será más bajo.
@@ -111,8 +169,22 @@ python -m legalrag.cli serve        # http://127.0.0.1:8000
 
 Permite formular una pregunta jurídica y ver la respuesta junto con los pasajes
 recuperados y las normas citadas. Responde con la misma configuración que generó la
-entrega. Detenerla con `Ctrl + C` antes de lanzar otra ejecución que use los modelos, para
-no competir por la memoria de la GPU.
+entrega (§7). Detenerla con `Ctrl + C` antes de lanzar otra ejecución que use los modelos,
+para no competir por la memoria de la GPU.
+
+Cubre los tres criterios del §6.2:
+
+- **Consulta de extremo a extremo.** Formulario de pregunta contra el mismo pipeline de la
+  entrega, con la traza de la corrida (modelo, candidatos, tiempo, decodificación).
+- **Pasajes y normas citadas.** El resultado lista los pasajes recuperados con su score, y
+  el panel «Ver la evidencia» separa las normas citadas en la respuesta de los pasajes que
+  recibió el generador.
+- **Identidad visual de Software Colombia.** Paleta y tipografía en
+  `interfaz/styles/tokens.css` (`--sc-cyan`, `--sc-orange`, `--sc-deep`), con el
+  descargo de que es un trabajo académico y no un producto oficial del patrocinador.
+
+El arranque tarda varios minutos: carga los índices y los modelos, y la primera vez
+también los descarga.
 
 ## Limitaciones conocidas
 
@@ -137,15 +209,29 @@ no competir por la memoria de la GPU.
 ## Estructura del repositorio
 
 ```
+reproducir.sh             comando único de reproducción (§6.2)
 src/                      pipeline completo (entrada: src/main.py)
 interfaz/                 interfaz gráfica
 scripts/                  evaluación con el juez y herramientas de medición
 data/oficial/             material de los organizadores (preguntas, esquema, evaluador)
 informe/INFORME_TECNICO.pdf
-CORPUS.md                 bitácora del corpus
-corpus_manifest.json      un registro por documento incorporado
+CORPUS.md                 bitácora del corpus (inventario, criterio, método)
+corpus_manifest.json      un registro por documento incorporado (32.617)
+submissions.jsonl         las 992 respuestas de la entrega
 MARKS.md, CONTINUAR.md    bitácora de iteraciones y estado del trabajo
 ```
+
+### Mapa de entregables (§9.2)
+
+| N.º | Entregable | Dónde |
+|---|---|---|
+| 2 | Repositorio con README (dependencias, arquitectura, comando único) | este archivo |
+| 3 | `submissions.jsonl` con las 992 respuestas | raíz del repositorio |
+| 4 | `CORPUS.md` y `corpus_manifest.json` | raíz del repositorio |
+| 5 | Corpus e índice bajo licencia abierta | sección «Corpus e índice» |
+| 6 | Informe técnico de máximo 3 páginas | `informe/INFORME_TECNICO.pdf` |
+| 7 | Video de máximo 5 minutos | sección «Video» |
+| 8 | Interfaz gráfica | `interfaz/`, se levanta con `legalrag.cli serve` |
 
 El código usa MIT (`LICENSE`). El procesamiento del corpus conserva la licencia de
 `data/raw/LICENSE` y sus excepciones para contenido de terceros; cada modelo mantiene la

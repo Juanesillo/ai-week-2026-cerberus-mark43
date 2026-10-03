@@ -356,6 +356,25 @@ p {
   text-align: center;
 }
 
+.ask__mark {
+  display: block;
+  margin: 0 auto var(--sp-3);
+  color: var(--sc-deep);
+}
+
+.ask__mark-eyes {
+  fill: var(--sc-orange);
+}
+
+.ask__kicker {
+  margin-bottom: var(--sp-2);
+  font-size: var(--step--1);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sc-deep);
+}
+
 .ask__title {
   font-size: var(--step-2);
   margin-bottom: var(--sp-2);
@@ -507,6 +526,33 @@ p {
 }
 
 .specline b {
+  color: var(--sc-deep);
+  font-weight: 700;
+}
+
+.specline__name {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-2);
+  font-family: var(--font-sans);
+  font-size: var(--step--1);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.specline__name::before {
+  content: "";
+  width: 2rem;
+  height: 3px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  background: var(--sc-orange);
+}
+
+.specline__name strong {
   color: var(--sc-deep);
   font-weight: 700;
 }
@@ -872,6 +918,15 @@ p {
   counter-reset: passage;
 }
 
+#passages-slot {
+  max-height: min(70vh, 40rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: var(--sp-2);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
 .passage {
   padding-top: var(--sp-4);
   border-top: 1px solid var(--line);
@@ -1092,6 +1147,7 @@ p {
 
 .proof__question {
   margin-top: var(--sp-3);
+  white-space: pre-line;
 
   max-width: 36ch;
   font-size: var(--step-2);
@@ -1156,6 +1212,10 @@ p {
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
+}
+
+.proof__body .card {
+  color: var(--fg);
 }
 
 .proof__empty {

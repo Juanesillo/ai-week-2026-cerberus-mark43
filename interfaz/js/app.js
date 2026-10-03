@@ -245,7 +245,7 @@ function renderRun(slot, data, traza) {
     ["Formato", data.abstencion ? `${data.formato} · abstencion` : data.formato],
     ["Pasajes", String((data.pasajes_recuperados || []).length)],
   ];
-  if (traza && traza.k) filas.push(["k solicitado", String(traza.k)]);
+  if (traza && traza.k) filas.push(["Candidatos", String(traza.k)]);
   if (traza && traza.modelo) filas.push(["Modelo", String(traza.modelo)]);
   if (traza && traza.segundos) filas.push(["Tiempo", `${traza.segundos} s`]);
   filas.push(["Decodificacion", "T = 0, semilla fija"]);
@@ -283,7 +283,8 @@ function renderPassages(slot, countSlot, data, traza) {
     const li = el("li", "passage");
 
     const head = el("div", "passage__head");
-    const titulo = m.norma ? `${m.norma}, articulo ${m.articulo}` : p.doc_id;
+    const norma = m.norma || p.doc_id;
+    const titulo = m.articulo ? `${norma}, articulo ${m.articulo}` : norma;
     head.append(el("p", "passage__title", titulo));
 
     head.append(el("span", "passage__score", `score ${p.score}`));
@@ -309,7 +310,35 @@ function renderPassages(slot, countSlot, data, traza) {
   slot.append(list);
 }
 
-function initEvidenceView(getQuestion) {
+function evidenceCard(title) {
+  const card = el("article", "card");
+  const head = el("div", "card__head");
+  const count = el("span", "card__count");
+  head.append(el("h3", "card__title", title), count);
+  const slot = el("div");
+  card.append(head, slot);
+  return { card, slot, count };
+}
+
+function renderEvidence(body, last) {
+  body.replaceChildren(el("p", "proof__label", "Evidencia"));
+
+  if (!last) {
+    const empty = el("div", "proof__empty");
+    empty.append(el("p", null, "Todavia sin contenido."));
+    body.append(empty);
+    return;
+  }
+
+  const { data, traza } = last;
+  const pasajes = evidenceCard("Pasajes que recibio el generador");
+  renderPassages(pasajes.slot, pasajes.count, data, traza);
+  const citas = evidenceCard("Normas citadas en la respuesta");
+  renderChecks(citas.slot, citas.count, data, traza);
+  body.append(citas.card, pasajes.card);
+}
+
+function initEvidenceView(getQuestion, getLast) {
   const view = document.querySelector("#evidence-view");
   const open = document.querySelector("#open-evidence");
   const close = document.querySelector("#close-evidence");
@@ -317,8 +346,10 @@ function initEvidenceView(getQuestion) {
 
   open.addEventListener("click", () => {
     const titulo = view.querySelector("#proof-title");
+    const body = view.querySelector("#proof-body");
 
     if (titulo) titulo.textContent = getQuestion();
+    if (body) renderEvidence(body, getLast());
     view.showModal();
   });
 
@@ -384,7 +415,8 @@ function initQueryForm() {
   const banner = document.querySelector("#demo-banner");
 
   let lastQuestion = "";
-  initEvidenceView(() => lastQuestion);
+  let last = null;
+  initEvidenceView(() => lastQuestion, () => last);
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -432,6 +464,7 @@ function initQueryForm() {
       const data = payload.respuesta || payload;
       const traza = payload.traza || null;
       if (!data || !data.formato) throw new Error("respuesta sin el campo formato");
+      last = { data, traza };
 
       answerFormat.textContent = data.abstencion ? "abstencion" : data.formato;
       renderAnswer(answerSlot, data);
