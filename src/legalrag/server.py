@@ -64,15 +64,19 @@ def serve(config, port):
                 citations = diagnostic.get("citas", [])
                 corpus = {p["doc_id"]: {"doc_id": p["doc_id"], "norma_key": p["norma"],
                           "norma": p["encabezado"], "url": p.get("url")} for p in passages}
+                # Los pasajes de la entrega solo traen doc_id e intervalo; la procedencia sale de la evidencia.
+                origen = {(p["doc_id"], p["inicio"], p["fin"]): p for p in passages}
                 self.send_json(200, {"respuesta": response, "traza": {
                     "modelo": config.llm_model, "k": config.top_k_retrieval,
                     "segundos": response["latencia_ms"] / 1000,
                     "citas_respaldadas": [c for c in citations if c["verificada"]],
                     "citas_sin_respaldo": [c for c in citations if not c["verificada"]],
                     "corpus": list(corpus.values()),
-                    "pasajes": [{"norma": p["doc_id"], "articulo": None,
-                                 "url": corpus.get(p["doc_id"], {}).get("url")}
-                                for p in response["pasajes_recuperados"]]
+                    "pasajes": [{"titulo": e.get("encabezado"), "norma": e.get("norma"),
+                                 "articulo": e.get("numero_articulo"),
+                                 "url": e.get("url") or corpus.get(p["doc_id"], {}).get("url")}
+                                for p in response["pasajes_recuperados"]
+                                for e in [origen.get((p["doc_id"], p.get("inicio"), p.get("fin")), {})]]
                 }})
             except (ValueError, KeyError, TypeError) as exc:
                 self.send_json(400, {"error": str(exc)})

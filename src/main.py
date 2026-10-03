@@ -4,6 +4,7 @@
     python3 src/main.py --mark 42       # otro mark (ver MARKS)
     python3 src/main.py --split test    # las 992 del examen -> submissions.jsonl (sin evaluador)
     python3 src/main.py --split test --reanudar   # si se cortó: sigue desde la última respuesta escrita
+    python3 src/main.py --interfaz      # interfaz gráfica en http://127.0.0.1:8000 con el mismo mark de la entrega
 
 Antes de empezar comprueba que estén el índice (`index/`), el corpus procesado (`data/processed/`), el manifiesto
 (`corpus_manifest.json`) y el material oficial (`data/oficial/`). Cada corrida reemplaza la anterior del mismo mark
@@ -24,10 +25,11 @@ sys.path.insert(0, str(RAIZ / "src"))
 from legalrag.config import MARKS  # noqa: E402
 
 
-def comprobar(config):
-    faltan = [str(p.relative_to(RAIZ)) for p in (config.index_dir / "build.json", config.prepared,
-                                                 RAIZ / "data/oficial/data/sample_50.jsonl")
-              if not p.exists()]
+def comprobar(config, con_banco=True):
+    requeridos = [config.index_dir / "build.json", config.prepared]
+    if con_banco:
+        requeridos.append(RAIZ / "data/oficial/data/sample_50.jsonl")
+    faltan = [str(p.relative_to(RAIZ)) for p in requeridos if not p.exists()]
     if config.normalizador_citas and not (RAIZ / "corpus_manifest.json").is_file():
         faltan.append("corpus_manifest.json (lo usa el normalizador de citas)")
     if faltan:
@@ -45,6 +47,9 @@ def main():
     ap.add_argument("--reanudar", action="store_true",
                     help="retoma una corrida interrumpida sin repetir lo ya respondido (mismo banco, índice, código y "
                          "mark; si cambió algo, se niega)")
+    ap.add_argument("--interfaz", action="store_true",
+                    help="levanta la interfaz gráfica conectada al modelo en vez de responder un banco")
+    ap.add_argument("--puerto", type=int, default=8000)
     args = ap.parse_args()
 
     from legalrag.silencio import silenciar
@@ -53,6 +58,13 @@ def main():
     from legalrag.pipeline import run
 
     config = replace(CONFIG, root=RAIZ, **MARKS[args.mark])
+    if args.interfaz:
+        # Misma configuración que la entrega (§7): lo que se consulte en la interfaz debe coincidir con lo entregado.
+        comprobar(config, con_banco=False)
+        from legalrag.server import serve
+        print(f"Cerberus Mark {args.mark} · interfaz", flush=True)
+        serve(config, args.puerto)
+        return
     comprobar(config)
     if args.split == "test":
         preguntas, salida = RAIZ / "data/oficial/data/test_992.jsonl", RAIZ / "submissions.jsonl"

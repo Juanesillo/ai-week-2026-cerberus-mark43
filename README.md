@@ -106,7 +106,7 @@ el resultado sobre las 992 será más bajo.
 ## Interfaz gráfica
 
 ```bash
-python -m legalrag.cli serve        # http://127.0.0.1:8000
+python src/main.py --interfaz       # http://127.0.0.1:8000 (o: python -m legalrag.cli serve)
 ```
 
 Permite formular una pregunta jurídica y ver la respuesta junto con los pasajes

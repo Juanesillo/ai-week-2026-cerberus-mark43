@@ -283,7 +283,9 @@ function renderPassages(slot, countSlot, data, traza) {
     const li = el("li", "passage");
 
     const head = el("div", "passage__head");
-    const titulo = m.norma ? `${m.norma}, articulo ${m.articulo}` : p.doc_id;
+    const titulo =
+      m.titulo ||
+      (m.norma ? (m.articulo ? `${m.norma}, articulo ${m.articulo}` : m.norma) : p.doc_id);
     head.append(el("p", "passage__title", titulo));
 
     head.append(el("span", "passage__score", `score ${p.score}`));
