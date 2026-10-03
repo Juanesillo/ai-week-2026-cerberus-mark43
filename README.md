@@ -48,6 +48,8 @@ python src/main.py --split test        # 992 preguntas -> submissions.jsonl
 |---|---|---|---|
 | Corpus procesado e índice vectorial | https://drive.google.com/drive/folders/1Wb9210bh26VtHSink3AOwv5I4wn-rs9F?usp=sharing | ~15 GB | CC-BY-4.0 |
 
+link alternativo: https://uniandes-my.sharepoint.com/shared?listurl=https%3A%2F%2Funiandes%2Dmy%2Esharepoint%2Ecom%2Fpersonal%2Fj%5Ftrivinon%5Funiandes%5Fedu%5Fco%2FDocuments&id=%2Fpersonal%2Fj%5Ftrivinon%5Funiandes%5Fedu%5Fco%2FDocuments%2FDATAP34K&ct=1791057150815&or=OWA%2DNT%2DMail&shareLink=1&ga=1
+
 
 Requisitos del enlace (§9.3): descarga sin solicitud de permiso, lectura para cualquiera
 que tenga el vínculo, y activo durante treinta días.
